@@ -1,24 +1,31 @@
-const express = require("express");
 const fs = require("fs");
 const musicmetadata = require("music-metadata");
-
-const mongoose = require("mongoose");
-const gridfs = require("gridfs-stream");
 const formidable = require("formidable");
 
-const app = express();
-
+// Mongoose
+const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/music_streamer", { useNewUrlParser: true });
-gridfs.mongo = mongoose.mongo;
-
 const connection = mongoose.connection;
 
+// Express
+const express = require("express");
+const app = express();
+
+// Gridfs
+const gridfs = require("gridfs-stream");
+gridfs.mongo = mongoose.mongo;
+
+// Mongoose connection error check
 connection.on("error", console.error.bind(console, "connection error:"));
 
+// Mongoose connection
 connection.once("open", () => {
+	// Setup gridfs
 	const gfs = gridfs(connection.db);
+
 	console.log("Mongo connection established.");
 
+	// Handle file uploads
 	app.post("/upload", (req, res) => {
 		var form = new formidable.IncomingForm();
 
@@ -26,65 +33,59 @@ connection.once("open", () => {
 
 		form.parse(req, function(err, fields, files) {
 			if (err) next(err);
-
-			// TODO: make sure my_file and project_id exist
-			/*
-				fs.rename(files.my_file.path, fields.project_id, function(err) {
-					if (err) next(err);
-					res.end();
-				});
-			*/
-			console.log(err, fields, files);
 		});
-		//const writestream = gfs.createWriteStream({ filename: db_filename });
+
+		form.onPart = function(part) {
+			const writestream = gfs.createWriteStream({ filename: part.filename });
+
+			part.pipe(writestream);
+
+			writestream.on("close", function (file) {
+				res.send("File Created : " + file.filename);
+			});
+		};
 	});
-});
-/*
-app.get("/music", (req,res) => {
-	// File to be served
 
-	const fileId = req.query.id;
-	const type = req.query.type;
-	const file = __dirname + "/../public/music/" + fileId;
+	// Handle file streaming
+	app.get("/music", (req,res) => {
+		const filename = req.query.id;
+		const reqType = req.query.type;
 
-	fs.exists(file,function(exists){
-		if(exists) {
-			const rstream = fs.createReadStream(file);
-			switch (type) {
-				case "stream":
-					rstream.pipe(res);
+		gfs.exist({ filename }, function (err, file) {
+			if (err || !file) {
+				res.send("File Not Found");
+			} else {
+				const rstream = gfs.createReadStream({ filename: filename });
 
-					break;
+				switch (reqType) {
+					case "stream":
+						rstream.pipe(res);
 
-				case "meta":
-					res.setHeader("Access-Control-Allow-Origin", "*");
-					res.setHeader("Content-type", "application/json");
+						break;
 
-					const parser = musicmetadata.parseStream(rstream).then( (metadata) => {
-						res.send(metadata);
-						res.end();
-					//	rstream.close();
-					}).catch(err => {
-						console.error(err);
-						res.send(err);
-						res.end();
-					});
+					case "meta":
+						res.setHeader("Access-Control-Allow-Origin", "*");
+						res.setHeader("Content-type", "application/json");
 
-					break;
+						const parser = musicmetadata.parseStream(rstream).then( metadata => {
+							res.send(metadata);
+							res.end();
+						}).catch(err => {
+							console.error(err);
+							res.send(err);
+							res.end();
+						});
 
-				default:
-					res.setHeader("Content-disposition", "attachment; filename=" + fileId);
-					rstream.pipe(res);
+						break;
+
+					default:
+						res.setHeader("Content-disposition", "attachment; filename=" + filename);
+						rstream.pipe(res);
+				}
 			}
-
-		} else {
-			res.send("Its a 404");
-			res.end();
-		}
-
+		});
 	});
 });
-*/
 
 app.use(express.static(__dirname + "/../public/"));
 
