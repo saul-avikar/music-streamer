@@ -8,6 +8,9 @@
 				<audio src="http://localhost:8000/music?id=test.flac&type=stream" controls>
 					<a href="http://localhost:8000/music?id=test.flac">Download song</a>
 				</audio>
+
+				<UploadForm />
+
 				<blockquote>
 					&#8220;First, solve the problem. Then, write the code.&#8221;
 					<footer>
@@ -22,6 +25,8 @@
 </template>
 
 <script>
+	import UploadForm from "@/components/upload-form";
+
 	export default {
 		data () {
 			return {
@@ -41,6 +46,10 @@
 			}).catch(err => {
 				console.error(err);
 			});
+		},
+
+		components: {
+			UploadForm
 		}
 	};
 </script>

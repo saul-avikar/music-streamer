@@ -2,8 +2,44 @@ const express = require("express");
 const fs = require("fs");
 const musicmetadata = require("music-metadata");
 
+const mongoose = require("mongoose");
+const gridfs = require("gridfs-stream");
+const formidable = require("formidable");
+
 const app = express();
 
+mongoose.connect("mongodb://localhost:27017/music_streamer", { useNewUrlParser: true });
+gridfs.mongo = mongoose.mongo;
+
+const connection = mongoose.connection;
+
+connection.on("error", console.error.bind(console, "connection error:"));
+
+connection.once("open", () => {
+	const gfs = gridfs(connection.db);
+	console.log("Mongo connection established.");
+
+	app.post("/upload", (req, res) => {
+		var form = new formidable.IncomingForm();
+
+		form.multiples = true;
+
+		form.parse(req, function(err, fields, files) {
+			if (err) next(err);
+
+			// TODO: make sure my_file and project_id exist
+			/*
+				fs.rename(files.my_file.path, fields.project_id, function(err) {
+					if (err) next(err);
+					res.end();
+				});
+			*/
+			console.log(err, fields, files);
+		});
+		//const writestream = gfs.createWriteStream({ filename: db_filename });
+	});
+});
+/*
 app.get("/music", (req,res) => {
 	// File to be served
 
@@ -48,6 +84,7 @@ app.get("/music", (req,res) => {
 
 	});
 });
+*/
 
 app.use(express.static(__dirname + "/../public/"));
 

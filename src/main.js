@@ -13,8 +13,14 @@ import {
 	VIcon,
 	VGrid,
 	VToolbar,
+	VForm,
+	VInput,
+	VHover,
 	transitions
 } from "vuetify";
+import {
+	Ripple
+} from "vuetify/es5/directives";
 import "../node_modules/vuetify/src/stylus/app.styl";
 
 Vue.use(Vuetify, {
@@ -27,7 +33,13 @@ Vue.use(Vuetify, {
 		VIcon,
 		VGrid,
 		VToolbar,
+		VForm,
+		VInput,
+		VHover,
 		transitions
+	},
+	directives: {
+		Ripple
 	},
 	theme: {
 		primary: "#ee44aa",
