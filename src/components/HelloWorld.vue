@@ -2,12 +2,9 @@
 	<v-container fluid>
 		<v-slide-y-transition mode="out-in">
 			<v-layout column align-center>
-				<img src="@/assets/logo.png" alt="Vuetify.js" class="mb-5">
 				<a href="http://localhost:8000/music?id=test.flac" target="_blank"> <button class="btn btn-success"> Download </button></a>
 				{{ meta ? meta.artist : "?" }}: {{ meta ? meta.title : "?" }}
-				<audio src="http://localhost:8000/music?id=test.flac&type=stream" controls>
-					<a href="http://localhost:8000/music?id=test.flac">Download song</a>
-				</audio>
+				<AudioControls :filename="'test.flac'" />
 
 				<UploadForm />
 
@@ -26,6 +23,7 @@
 
 <script>
 	import UploadForm from "@/components/upload-form";
+	import AudioControls from "@/components/app-audio-controls";
 
 	export default {
 		data () {
@@ -37,19 +35,18 @@
 
 		created () {
 			fetch("http://localhost:8000/music?id=test.flac&type=meta").then(response => {
-				console.log(response);
 				return response.json();
 			}).then(meta => {
 				this.meta = meta.common;
 				this.format = meta.format;
-				console.log(meta);
 			}).catch(err => {
 				console.error(err);
 			});
 		},
 
 		components: {
-			UploadForm
+			UploadForm,
+			AudioControls
 		}
 	};
 </script>

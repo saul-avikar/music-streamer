@@ -1,7 +1,10 @@
 <template>
-	<v-form class="box" method="post" action="/upload" enctype="multipart/form-data">
+	<v-form method="post" action="/upload" enctype="multipart/form-data">
 		<br /><br /><FileUploads @statusChange="statusChange" /><br /><br />
 		<!-- INITIAL -->
+		<template v-if="uploadData">
+			<FileCardList :files="uploadData.files" />
+		</template>
 		<div v-if="status === 0">
 			<h2>INITIAL</h2>
 		</div>
@@ -23,6 +26,7 @@
 
 <script>
 	import FileUploads from "@/components/app-file-upload";
+	import FileCardList from "@/components/app-file-card-list";
 
 	export default {
 		data () {
@@ -56,7 +60,6 @@
 			},
 
 			submit () {
-
 				const formData = new FormData();
 
 				if (!this.uploadData) return;
@@ -70,12 +73,12 @@
 				let xhr = new XMLHttpRequest();
 				xhr.open("POST", "/upload");
 				xhr.send(formData);
-
 			}
 		},
 
 		components: {
-			FileUploads
+			FileUploads,
+			FileCardList
 		}
 	};
 </script>

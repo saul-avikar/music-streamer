@@ -22,6 +22,7 @@ import {
 	Ripple
 } from "vuetify/es5/directives";
 import "../node_modules/vuetify/src/stylus/app.styl";
+import FileSize from "@/filters/file-size";
 
 Vue.use(Vuetify, {
 	components: {
@@ -40,6 +41,9 @@ Vue.use(Vuetify, {
 	},
 	directives: {
 		Ripple
+	},
+	filters: {
+		FileSize
 	},
 	theme: {
 		primary: "#ee44aa",
