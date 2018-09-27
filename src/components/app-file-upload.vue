@@ -37,7 +37,6 @@
 
 		watch: {
 			currentStatus (currentStatus) {
-				console.log(currentStatus);
 				this.$emit("statusChange", {status: currentStatus, files: this.uploadedFiles, error: this.uploadError});
 			}
 		},

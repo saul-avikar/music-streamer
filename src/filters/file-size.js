@@ -19,6 +19,7 @@ export default Vue.filter("FormatFileSize", value => {
 	value = value.toFixed(1);
 
 	// Add the extention
+	value += " ";
 	switch (i) {
 		case 0:
 			value += "B";

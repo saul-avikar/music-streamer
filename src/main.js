@@ -16,6 +16,7 @@ import {
 	VForm,
 	VInput,
 	VHover,
+	VCard,
 	transitions
 } from "vuetify";
 import {
@@ -37,6 +38,7 @@ Vue.use(Vuetify, {
 		VForm,
 		VInput,
 		VHover,
+		VCard,
 		transitions
 	},
 	directives: {

@@ -7,6 +7,7 @@
 				<AudioControls :filename="'test.flac'" />
 
 				<UploadForm />
+				<FileCard :name="'test'" :size="1234567890" />
 
 				<blockquote>
 					&#8220;First, solve the problem. Then, write the code.&#8221;
@@ -24,6 +25,7 @@
 <script>
 	import UploadForm from "@/components/upload-form";
 	import AudioControls from "@/components/app-audio-controls";
+	import FileCard from "@/components/app-file-card.vue";
 
 	export default {
 		data () {
@@ -46,7 +48,8 @@
 
 		components: {
 			UploadForm,
-			AudioControls
+			AudioControls,
+			FileCard
 		}
 	};
 </script>

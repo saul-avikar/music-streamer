@@ -38,7 +38,6 @@
 		computed: {
 			fileCount () {
 				if (this.uploadData && this.uploadData.files) {
-					console.log(this.uploadData.files);
 					return this.uploadData.files.length;
 				}
 
@@ -63,8 +62,6 @@
 				const formData = new FormData();
 
 				if (!this.uploadData) return;
-
-				console.log(this.uploadData.files);
 
 				this.uploadData.files.forEach(file => {
 					formData.append("files", file);
