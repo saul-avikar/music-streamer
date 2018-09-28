@@ -3,7 +3,7 @@
 		<br /><br /><FileUploads @statusChange="statusChange" /><br /><br />
 		<!-- INITIAL -->
 		<template v-if="uploadData">
-			<FileCardList :files="uploadData.files" />
+			<FileCardList :files="uploadData.files" @removeFile="removeFile" />
 		</template>
 		<div v-if="status === 0">
 			<h2>INITIAL</h2>
@@ -70,6 +70,16 @@
 				let xhr = new XMLHttpRequest();
 				xhr.open("POST", "/upload");
 				xhr.send(formData);
+			},
+
+			removeFile (file) {
+				if (this.fileCount) {
+					var index = this.uploadData.files.indexOf(file);
+
+					if (index > -1) {
+						this.uploadData.files.splice(index, 1);
+					}
+				}
 			}
 		},
 

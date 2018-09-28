@@ -1,6 +1,12 @@
 <template>
 	<v-layout column align-center>
-		<FileCard v-for="file in files" :key="file.name" :name="file.name" :size="file.size" />
+		<FileCard
+			v-for="file in files"
+			:key="file.name"
+			:name="file.name"
+			:size="file.size"
+			@removeCard="removeCard"
+		/>
 	</v-layout>
 </template>
 
@@ -22,6 +28,14 @@
 
 					return true;
 				}
+			}
+		},
+
+		methods: {
+			removeCard (cardName) {
+				const file = this.files.find(obj => obj.name === cardName);
+				
+				this.$emit("removeFile", file);
 			}
 		},
 

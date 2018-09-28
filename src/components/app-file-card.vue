@@ -4,7 +4,7 @@
 			<span class="flex font-weight-bold">{{ name }}</span>
 			<span class="flex">{{ size | FormatFileSize }}</span>
 			<span class="remove-button">
-				<v-btn icon flat color="red">
+				<v-btn icon flat color="red" @click="removeCard">
 					<v-icon large>remove_circle</v-icon>
 				</v-btn>
 			</span>
@@ -30,6 +30,12 @@
 					return value > 0;
 				}
 			}
+		},
+
+		methods: {
+			removeCard () {
+				this.$emit("removeCard", this.name);
+			}
 		}
 	};
 </script>
@@ -43,6 +49,8 @@
 	.file-card-text {
 		display: flex;
 		align-items: center;
+		padding: 5px;
+		padding-left: 20px;
 	}
 
 	.flex {
