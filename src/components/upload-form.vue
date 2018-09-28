@@ -1,25 +1,9 @@
 <template>
 	<v-form method="post" action="/upload" enctype="multipart/form-data">
 		<br /><br /><FileUploads @statusChange="statusChange" /><br /><br />
-		<!-- INITIAL -->
-		<template v-if="uploadData">
-			<FileCardList :files="uploadData.files" @removeFile="removeFile" />
+		<template v-if="files">
+			<FileCardList :files="files" @removeFile="removeFile" />
 		</template>
-		<div v-if="status === 0">
-			<h2>INITIAL</h2>
-		</div>
-		<!-- SAVING -->
-		<div v-if="status === 1">
-			<h2>SAVING</h2>
-		</div>
-		<!-- SUCCESS -->
-		<div v-if="status === 2">
-			<h2>Uploaded {{ fileCount }} file(s) successfully.</h2>
-		</div>
-		<!-- FAILED -->
-		<div v-if="status === 3">
-			<h2>Error: {{ uploadData.error }}</h2>
-		</div>
 		<v-btn @click="submit">Submit</v-btn>
 	</v-form>
 </template>
@@ -31,22 +15,14 @@
 	export default {
 		data () {
 			return {
-				uploadData: null
+				files: null
 			};
 		},
 
 		computed: {
 			fileCount () {
-				if (this.uploadData && this.uploadData.files) {
-					return this.uploadData.files.length;
-				}
-
-				return 0;
-			},
-
-			status () {
-				if (this.uploadData && this.uploadData.status) {
-					return this.uploadData.status;
+				if (this.files) {
+					return this.files.length;
 				}
 
 				return 0;
@@ -54,16 +30,16 @@
 		},
 
 		methods: {
-			statusChange (form) {
-				this.uploadData = form;
+			statusChange (files) {
+				this.files = files;
 			},
 
 			submit () {
 				const formData = new FormData();
 
-				if (!this.uploadData) return;
+				if (!this.files) return;
 
-				this.uploadData.files.forEach(file => {
+				this.files.forEach(file => {
 					formData.append("files", file);
 				});
 
@@ -74,10 +50,10 @@
 
 			removeFile (file) {
 				if (this.fileCount) {
-					var index = this.uploadData.files.indexOf(file);
+					var index = this.files.indexOf(file);
 
 					if (index > -1) {
-						this.uploadData.files.splice(index, 1);
+						this.files.splice(index, 1);
 					}
 				}
 			}

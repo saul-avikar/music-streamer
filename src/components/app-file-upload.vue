@@ -22,58 +22,42 @@
 </template>
 
 <script>
-	const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
-
 	export default {
 		data() {
 			return {
 				height: 0,
-
-				uploadedFiles: [],
-				uploadError: null,
-				currentStatus: STATUS_INITIAL
+				uploadedFiles: []
 			};
-		},
-
-		watch: {
-			currentStatus (currentStatus) {
-				this.$emit("statusChange", {status: currentStatus, files: this.uploadedFiles, error: this.uploadError});
-			}
 		},
 
 		methods: {
 			reset() {
 				// reset form to initial state
 				this.uploadedFiles = [];
-				this.uploadError = null;
-				this.currentStatus = STATUS_INITIAL;
-			},
-
-			save(formData) {
-				// upload data to the server
-				this.uploadedFiles = formData.getAll("files");
-				this.currentStatus = STATUS_SAVING;
-
-				console.log(formData.getAll("files"));
-
-				this.currentStatus = STATUS_SUCCESS;
-
-				/*
-					upload(formData).then(x => {
-						this.uploadedFiles = [].concat(x);
-						this.currentStatus = STATUS_SUCCESS;
-					}).catch(err => {
-						this.uploadError = err.response;
-						this.currentStatus = STATUS_FAILED;
-					});
-				*/
 			},
 
 			filesChange(fileList) {
 				if (!fileList.length) return;
+				let newFilesArray = Object.keys(fileList).map((key) => fileList[key]);
 
-				this.uploadedFiles = Object.keys(fileList).map((key) => fileList[key]);
-				this.currentStatus = STATUS_SUCCESS;
+				// Check for duplicates
+				if (this.uploadedFiles.length) {
+					newFilesArray = newFilesArray.filter(file => {
+						let hasValue = false;
+
+						this.uploadedFiles.forEach((value) => {
+							if (!hasValue) {
+								hasValue = value.name === file.name;
+							}
+						});
+
+						return !hasValue;
+					});
+				}
+
+				this.uploadedFiles = [...this.uploadedFiles, ...newFilesArray];
+
+				this.$emit("statusChange", this.uploadedFiles);
 			}
 		},
 
