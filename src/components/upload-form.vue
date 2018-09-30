@@ -1,6 +1,22 @@
 <template>
 	<v-form method="post" action="/upload" enctype="multipart/form-data">
-		<br /><br /><FileUploads @statusChange="statusChange" /><br /><br />
+		<v-alert
+			:value="success"
+			type="success"
+			transition="scale-transition"
+		>
+			Success!
+		</v-alert>
+
+		<v-alert
+			:value="error"
+			type="error"
+			transition="scale-transition"
+		>
+			Error: {{ error }}
+		</v-alert>
+		<br />
+		<FileUploads @statusChange="statusChange" /><br />
 		<template v-if="files">
 			<FileCardList :files="files" @removeFile="removeFile" />
 		</template>
@@ -15,7 +31,9 @@
 	export default {
 		data () {
 			return {
-				files: null
+				files: null,
+				error: null,
+				success: false
 			};
 		},
 
@@ -30,22 +48,46 @@
 		},
 
 		methods: {
+			reset () {
+				this.files = null;
+				this.resetAlerts();
+			},
+
+			resetAlerts () {
+				this.error = null;
+				this.success = false;
+			},
+
 			statusChange (files) {
 				this.files = files;
 			},
 
 			submit () {
+
 				const formData = new FormData();
 
 				if (!this.files) return;
+
+				this.resetAlerts();
 
 				this.files.forEach(file => {
 					formData.append("files", file);
 				});
 
-				let xhr = new XMLHttpRequest();
-				xhr.open("POST", "/upload");
-				xhr.send(formData);
+				fetch("/upload", {
+					method: "POST",
+					body: formData
+				}).then(response => {
+					return response.text();
+				}).then(html => {
+					console.log(html);
+					this.success = true;
+				}).catch(err => {
+					console.error(err);
+					this.error = err;
+				});
+
+				this.reset();
 			},
 
 			removeFile (file) {

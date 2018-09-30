@@ -1,5 +1,5 @@
 <template>
-	<audio :src="'http://localhost:8000/music?id=' + filename + '&type=stream'" controls>
+	<audio :src="'/music?id=' + filename + '&type=stream'" controls>
 		Your browser does not support the audio element.
 	</audio>
 </template>

@@ -1,13 +1,8 @@
 <template>
 	<v-container fluid>
-		<v-slide-y-transition mode="out-in">
-			<v-layout column align-center>
-				<a href="http://localhost:8000/music?id=test.flac" target="_blank"> <button class="btn btn-success"> Download </button></a>
+				<a href="/music?id=test.flac" target="_blank"> <button class="btn btn-success"> Download </button></a>
 				{{ meta ? meta.artist : "?" }}: {{ meta ? meta.title : "?" }}
 				<AudioControls :filename="'test.flac'" />
-
-				<UploadForm />
-				<FileCard :name="'test'" :size="1234567890" />
 
 				<blockquote>
 					&#8220;First, solve the problem. Then, write the code.&#8221;
@@ -17,8 +12,6 @@
 						</small>
 					</footer>
 				</blockquote>
-			</v-layout>
-		</v-slide-y-transition>
 	</v-container>
 </template>
 
@@ -36,7 +29,7 @@
 		},
 
 		created () {
-			fetch("http://localhost:8000/music?id=test.flac&type=meta").then(response => {
+			fetch("/music?id=test.flac&type=meta").then(response => {
 				return response.json();
 			}).then(meta => {
 				this.meta = meta.common;

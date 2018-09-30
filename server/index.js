@@ -1,3 +1,4 @@
+const path = require("path");
 const fs = require("fs");
 const musicmetadata = require("music-metadata");
 const formidable = require("formidable");
@@ -26,7 +27,7 @@ connection.once("open", () => {
 	console.log("Mongo connection established.");
 
 	// Handle file uploads
-	app.post("/upload", (req, res) => {
+	app.post("/upload", (req, res, next) => {
 		var form = new formidable.IncomingForm();
 
 		form.multiples = true;
@@ -39,11 +40,16 @@ connection.once("open", () => {
 			const writestream = gfs.createWriteStream({ filename: part.filename });
 
 			part.pipe(writestream);
-
-			writestream.on("close", function (file) {
-				res.send("File Created : " + file.filename);
-			});
 		};
+
+		form.on("error", err => {
+			return next(err);
+		});
+
+		form.on("end", () => {
+			res.send("Success");
+			return next();
+		});
 	});
 
 	// Handle file streaming
@@ -85,8 +91,12 @@ connection.once("open", () => {
 			}
 		});
 	});
+
+	app.use(express.static(process.cwd() + "/public"));
+
+	app.use((req, res, next) => {
+		res.sendFile(process.cwd() + "/public/index.html");
+	});
+
+	app.listen(8000, () => console.log("App listening on port 8000!") );
 });
-
-app.use(express.static(__dirname + "/../public/"));
-
-app.listen(8000, () => console.log("App listening on port 8000!") );
